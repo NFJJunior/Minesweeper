@@ -9,7 +9,7 @@ pub enum LEVEL {
 pub mod map;
 
 fn main() {
-    let m = Map::new(LEVEL::EASY);
+    let m = Map::new(LEVEL::HARD);
 
     m.print();
 }

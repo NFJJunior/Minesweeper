@@ -50,8 +50,8 @@ impl Map {
 
         let mut i = 0;
         while i != self.number_of_mines {
-            let x = rng.gen_range(0..self.map_size - 1);
-            let y = rng.gen_range(0..self.map_size - 1);
+            let x = rng.gen_range(0..self.map_size);
+            let y = rng.gen_range(0..self.map_size);
 
             if self.real_map[x as usize][y as usize] != -1 {
                 self.real_map[x as usize][y as usize] = -1;
@@ -60,8 +60,8 @@ impl Map {
             }
         }
 
-        for i in 0..self.map_size - 1 {
-            for j in 0..self.map_size - 1 {
+        for i in 0..self.map_size {
+            for j in 0..self.map_size {
                 self.find_number(i, j);
             }
         }
@@ -74,8 +74,8 @@ impl Map {
 
         let mut count = 0;
 
-        for i in x as i32 - 1..x as i32 + 1 {
-            for j in y as i32 - 1..y as i32 + 1 {
+        for i in x as i32 - 1..=x as i32 + 1 {
+            for j in y as i32 - 1..=y as i32 + 1 {
                 if i < 0 || j < 0 || i as u32 >= self.map_size || j as u32 >= self.map_size {
                     continue;
                 }
@@ -90,21 +90,35 @@ impl Map {
     }
 
     pub fn print(&self) {
-        for i in 0..self.map_size - 1 {
-            for j in 0..self.map_size - 1 {
+        print!("     ");
+
+        for i in 0..self.map_size {
+            print!("{} ", i);
+            if i < 10 {
+                print!(" ");
+            }
+        }
+        
+        for _ in 0..2 {
+            println!("");
+        }
+
+        for i in 0..self.map_size {
+            print!("{}   ", i);
+            if i < 10 {
+                print!(" ");
+            }
+
+            for j in 0..self.map_size {
                 let c: char = match self.real_map[i as usize][j as usize] {
                     -1 => '*',
                     0 => '_',  //  ⚑
                     x => x.to_string().parse().unwrap(),
                 };
 
-                print!("{} ", c);
+                print!("{}  ", c);
             }
             println!("");
-        }
-
-        for (x, y) in &self.mines {
-            println!("{} {}", x, y)
         }
     }
 }
