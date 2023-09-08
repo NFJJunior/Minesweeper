@@ -5,6 +5,9 @@ pub struct Map {
     number_of_mines: u32,
     mines: Vec<(u32, u32)>,
     real_map: Vec<Vec<i32>>,
+    playing_map: Vec<Vec<i32>>,
+    number_of_flags: u32,
+    number_of_revealed: u32,
 }
 
 impl Map {
@@ -28,15 +31,19 @@ impl Map {
         }
 
         let mines: Vec<(u32, u32)> = Vec::<(u32, u32)>::with_capacity(number_of_mines as usize);
-        let real_map;
-
-        real_map = vec![vec![0; map_size as usize]; map_size as usize];
+        let real_map = vec![vec![0; map_size as usize]; map_size as usize];
+        let playing_map = vec![vec![0; map_size as usize]; map_size as usize];
+        let number_of_flags = 0;
+        let number_of_revealed = 0;
 
         let mut new_map = Self {
             map_size,
             number_of_mines,
             mines,
-            real_map
+            real_map,
+            playing_map,
+            number_of_flags,
+            number_of_revealed
         };
 
         new_map.place_bombs();
@@ -50,8 +57,8 @@ impl Map {
 
         let mut i = 0;
         while i != self.number_of_mines {
-            let x = rng.gen_range(0..self.map_size - 1);
-            let y = rng.gen_range(0..self.map_size - 1);
+            let x = rng.gen_range(0..self.map_size);
+            let y = rng.gen_range(0..self.map_size);
 
             if self.real_map[x as usize][y as usize] != -1 {
                 self.real_map[x as usize][y as usize] = -1;
@@ -60,8 +67,8 @@ impl Map {
             }
         }
 
-        for i in 0..self.map_size - 1 {
-            for j in 0..self.map_size - 1 {
+        for i in 0..self.map_size {
+            for j in 0..self.map_size {
                 self.find_number(i, j);
             }
         }
@@ -74,8 +81,8 @@ impl Map {
 
         let mut count = 0;
 
-        for i in x as i32 - 1..x as i32 + 1 {
-            for j in y as i32 - 1..y as i32 + 1 {
+        for i in x as i32 - 1..=x as i32 + 1 {
+            for j in y as i32 - 1..=y as i32 + 1 {
                 if i < 0 || j < 0 || i as u32 >= self.map_size || j as u32 >= self.map_size {
                     continue;
                 }
@@ -90,21 +97,108 @@ impl Map {
     }
 
     pub fn print(&self) {
-        for i in 0..self.map_size - 1 {
-            for j in 0..self.map_size - 1 {
-                let c: char = match self.real_map[i as usize][j as usize] {
-                    -1 => '*',
-                    0 => '_',  //  ⚑
-                    x => x.to_string().parse().unwrap(),
-                };
+        print!("     ");
 
-                print!("{} ", c);
+        for i in 0..self.map_size {
+            print!("{} ", i);
+            if i < 10 {
+                print!(" ");
             }
+        }
+        
+        for _ in 0..2 {
             println!("");
         }
 
-        for (x, y) in &self.mines {
-            println!("{} {}", x, y)
+        for i in 0..self.map_size {
+            print!("{}   ", i);
+            if i < 10 {
+                print!(" ");
+            }
+
+            for j in 0..self.map_size {
+                let c: char = match self.playing_map[i as usize][j as usize] {
+                    0 => '-',
+                    1 => match self.real_map[i as usize][j as usize].to_string().parse().unwrap() {
+                        -1 => '*', //  ⚑
+                        x => x.to_string().parse().unwrap(),
+                    }
+                    2 => '⚑',
+                    _ => ' ',
+                };
+
+                print!("{}  ", c);
+            }
+            println!("");
         }
+    }
+
+    pub fn reveal(&mut self, x: u32, y: u32) -> bool {
+        if self.real_map[x as usize][y as usize] == -1 {
+            return false;
+        }
+
+        if self.playing_map[x as usize][y as usize] == 1 {
+            return true;
+        }
+
+        if self.playing_map[x as usize][y as usize] == 2 {
+            return true;
+        }
+
+        self.playing_map[x as usize][y as usize] = 1;
+        self.number_of_revealed += 1;
+
+        if self.real_map[x as usize][y as usize] == 0 {
+            for i in x as i32 - 1..=x as i32 + 1 {
+                for j in y as i32 - 1..=y as i32 + 1 {
+                    if i < 0 || j < 0 || i as u32 >= self.map_size || j as u32 >= self.map_size {
+                        continue;
+                    }
+
+                    self.reveal(i as u32, j as u32);
+                }
+            }
+        }
+
+        true
+    }
+
+    pub fn flag(&mut self, x: u32, y: u32) {
+        if self.playing_map[x as usize][y as usize] == 1 {
+            return
+        }
+
+        self.playing_map[x as usize][y as usize] = 2;
+        self.number_of_flags += 1;
+    }
+
+    pub fn unflag(&mut self, x: u32, y: u32) {
+        if self.playing_map[x as usize][y as usize] == 2 {
+            self.playing_map[x as usize][y as usize] = 0;
+            self.number_of_flags -= 1;
+        }
+    }
+
+    pub fn game_won(&self) -> bool {
+        if self.number_of_revealed + self.number_of_mines == self.map_size * self.map_size {
+            println!("You won!");
+
+            return true;
+        }
+
+        false
+    }
+
+    pub fn game_lost(&mut self) {
+        for i in 0..self.map_size {
+            for j in 0..self.map_size {
+                if self.real_map[i as usize][j as usize] == -1 {
+                    self.playing_map[i as usize][j as usize] = 1;
+                }
+            }
+        }
+
+        self.print();
     }
 }
