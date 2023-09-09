@@ -1,0 +1,109 @@
+use druid::widget::{Button, Flex, Label};
+use druid::{Data, Env, EventCtx, LayoutCtx, LifeCycleCtx, PaintCtx, UpdateCtx, Widget, WidgetExt};
+
+#[derive(Clone, Data)]
+struct Cell {
+    is_mine: bool,
+    is_revealed: bool,
+}
+
+impl Cell {
+    fn new(is_mine: bool) -> Self {
+        Cell {
+            is_mine,
+            is_revealed: false,
+        }
+    }
+}
+
+struct MinesweeperUI {
+    grid: Vec<Vec<Cell>>,
+}
+
+impl Widget<MinesweeperUI> {
+    fn draw_cell(
+        ctx: &mut PaintCtx,
+        cell: &Cell,
+        env: &Env,
+    ) {
+        // Implement how to draw a single cell here.
+        // You can customize the appearance based on the cell's state.
+        // For example, draw a revealed cell differently from a hidden cell.
+    }
+}
+
+impl Widget<MinesweeperUI> for MinesweeperUI {
+    fn event(
+        &mut self,
+        ctx: &mut EventCtx,
+        event: &druid::Event,
+        data: &mut MinesweeperUI,
+        env: &druid::Env,
+    ) {
+        // Implement event handling here.
+        // Handle mouse clicks to reveal cells or flag mines, for example.
+    }
+
+    fn lifecycle(
+        &mut self,
+        ctx: &mut LifeCycleCtx,
+        event: &druid::LifeCycle,
+        data: &MinesweeperUI,
+        env: &druid::Env,
+    ) {
+        // Implement lifecycle handling if needed.
+    }
+
+    fn update(
+        &mut self,
+        ctx: &mut UpdateCtx,
+        _old_data: &MinesweeperUI,
+        _data: &MinesweeperUI,
+        env: &druid::Env,
+    ) {
+        // Implement update logic if needed.
+    }
+
+    fn layout(
+        &mut self,
+        ctx: &mut LayoutCtx,
+        bc: &druid::BoxConstraints,
+        _data: &MinesweeperUI,
+        env: &druid::Env,
+    ) -> druid::Size {
+        // Implement layout logic to determine the size of the Minesweeper grid.
+        // You may want to calculate the size based on the number of rows and columns.
+        // For example:
+        // let cell_size = 30.0; // Adjust as needed.
+        // let width = cell_size * num_columns as f64;
+        // let height = cell_size * num_rows as f64;
+        // druid::Size::new(width, height)
+    }
+
+    fn paint(&mut self, ctx: &mut PaintCtx, data: &MinesweeperUI, env: &druid::Env) {
+        // Implement painting logic for the Minesweeper grid.
+        // Iterate through the grid and call `draw_cell` to paint each cell.
+        for (row, row_cells) in data.grid.iter().enumerate() {
+            for (col, cell) in row_cells.iter().enumerate() {
+                // Calculate the position of the cell based on row and col.
+                // You can use this position to draw the cell at the correct location.
+                let cell_rect = druid::Rect::ZERO; // Calculate the cell rectangle.
+                ctx.with_save(|ctx| {
+                    ctx.clip(cell_rect);
+                    MinesweeperUI::draw_cell(ctx, cell, env);
+                });
+            }
+        }
+    }
+}
+
+fn build_ui() -> impl Widget<MinesweeperUI> {
+    let minesweeper_ui = MinesweeperUI {
+        // Initialize your Minesweeper grid here.
+        grid: vec![vec![Cell::new(false); 10]; 10], // Example: 10x10 grid with no mines.
+    };
+
+    Flex::column()
+        .with_child(Label::new("Minesweeper").padding(10.0))
+        .with_flex_child(minesweeper_ui, 1.0)
+}

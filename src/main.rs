@@ -9,8 +9,14 @@ pub enum LEVEL {
 
 pub mod map;
 
+pub mod gui;
+
 fn main() {
     let mut m = Map::new(LEVEL::EASY);
+
+    gui::main();
+
+    return;
 
     loop {
         m.print();
