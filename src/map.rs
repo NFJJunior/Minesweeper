@@ -3,7 +3,7 @@ use rand::Rng;
 
 #[derive(Clone, Data, Lens)]
 pub struct Map {
-    map_size: u32,
+    pub map_size: u32,
     number_of_mines: u32,
     #[data(eq)]
     mines: Vec<(u32, u32)>,
@@ -107,7 +107,8 @@ impl Map {
             2 => match self.real_map[x as usize][y as usize]
                 .to_string()
                 .parse()
-                .unwrap() {
+                .unwrap()
+            {
                 -1 => '*',
                 0 => ' ',
                 x => x.to_string().parse().unwrap(),
@@ -123,10 +124,6 @@ impl Map {
             return false;
         }
 
-        if self.playing_map[x as usize][y as usize] == 1 {
-            return true;
-        }
-
         if self.playing_map[x as usize][y as usize] == 2 {
             return true;
         }
@@ -135,13 +132,16 @@ impl Map {
         self.number_of_revealed += 1;
 
         if self.real_map[x as usize][y as usize] == 0 {
-            for i in x as i32 - 1..=x as i32 + 1 {
-                for j in y as i32 - 1..=y as i32 + 1 {
-                    if i < 0 || j < 0 || i as u32 >= self.map_size || j as u32 >= self.map_size {
-                        continue;
-                    }
+            if self.real_map[x as usize][y as usize] == 0 {
+                for i in x as i32 - 1..=x as i32 + 1 {
+                    for j in y as i32 - 1..=y as i32 + 1 {
+                        if i < 0 || j < 0 || i as u32 >= self.map_size || j as u32 >= self.map_size
+                        {
+                            continue;
+                        }
 
-                    self.reveal(i as u32, j as u32);
+                        self.reveal(i as u32, j as u32);
+                    }
                 }
             }
         }
@@ -156,8 +156,6 @@ impl Map {
 
     pub fn game_won(&self) -> bool {
         if self.number_of_revealed + self.number_of_mines == self.map_size * self.map_size {
-            println!("You won!");
-
             return true;
         }
 
@@ -168,7 +166,7 @@ impl Map {
         for i in 0..self.map_size {
             for j in 0..self.map_size {
                 if self.real_map[i as usize][j as usize] == -1 {
-                    self.playing_map[i as usize][j as usize] = 1;
+                    self.playing_map[i as usize][j as usize] = 2;
                 }
             }
         }
