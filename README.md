@@ -3,6 +3,15 @@ Small minesweeper game written in rust for a university project.
 
 I used the druid library for the GUI.
 
+To play the game, clone the project into a local directory. From console navigate to the cloned directory and give the following command:
+
+cargo run --release
+
+Choose your dificulty and play!
+
+The first click on a cell flags it, the second one reveals it.
+
+
 #### [Video Presentation](https://www.youtube.com/watch?v=tQ-rDOXaVDM)
 #### [User stories](https://github.com/NFJJunior/minesweeper/blob/master/doc/user_stories.txt)
 #### [Backlog](https://github.com/NFJJunior/minesweeper/blob/master/doc/backlog.txt)
