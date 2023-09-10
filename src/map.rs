@@ -13,6 +13,7 @@ pub struct Map {
     pub playing_map: Vec<Vec<i32>>,
     number_of_flags: u32,
     number_of_revealed: u32,
+    pub is_lost: bool,
 }
 
 impl Map {
@@ -49,6 +50,7 @@ impl Map {
             playing_map,
             number_of_flags,
             number_of_revealed,
+            is_lost: false,
         };
 
         new_map.place_bombs();
@@ -170,5 +172,7 @@ impl Map {
                 }
             }
         }
+
+        self.is_lost = true;
     }
 }

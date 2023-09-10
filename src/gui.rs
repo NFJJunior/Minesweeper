@@ -6,6 +6,21 @@ static mut GRID_SIZE: f64 = 9.0;
 
 use super::Map;
 
+unsafe fn build_popun(game_won: bool) -> impl Widget<Map> {
+    let label: Label<Map>;
+
+    if game_won {
+        label = Label::new("You won!");
+    } else {
+        label = Label::new("You lost");
+    }
+
+    let label = Align::centered(label);
+    let label = label.fix_size(200.0, 200.0);
+
+    label
+}
+
 unsafe fn build_ui() -> impl Widget<Map> {
     let mut grid: Flex<Map> = Flex::column();
 
@@ -19,14 +34,22 @@ unsafe fn build_ui() -> impl Widget<Map> {
 
                 let cell = Align::centered(label);
                 let cell = cell.border(Color::grey(0.6), 1.0);
-                let cell = cell.on_click(move |_ctx, data: &mut Map, _env| {
-                    if data.playing_map[i][j] == 0 {
-                        data.flag(i as u32, j as u32);
-                    } else if data.playing_map[i][j] == 1 {
-                        if data.reveal(i as u32, j as u32) {
-                            data.game_won();
-                        } else {
-                            data.game_lost();
+                let cell = cell.on_click(move |ctx, data: &mut Map, _env| {
+                    if data.is_lost {
+                        if data.playing_map[i][j] == 0 {
+                            data.flag(i as u32, j as u32);
+                        } else if data.playing_map[i][j] == 1 {
+                            if data.reveal(i as u32, j as u32) {
+                                data.game_won();
+                            } else {
+                                data.game_lost();
+
+                                let window = WindowDesc::new(build_popun(false))
+                                    .window_size((200.0, 200.0))
+                                    .title("Ending screen");
+
+                                ctx.new_window(window);
+                            }
                         }
                     }
                 });
