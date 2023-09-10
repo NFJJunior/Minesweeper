@@ -1,5 +1,6 @@
 # Minesweeper
-Small minesweeper game written in rust for a university project
+Small minesweeper game written in rust for a university project.
+
 I used the druid library for the GUI.
 
 #### [Video Presentation](https://www.youtube.com/watch?v=tQ-rDOXaVDM)
