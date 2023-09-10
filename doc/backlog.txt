@@ -1,0 +1,23 @@
+Init:
+    learn rust programming language concepts
+    create file structure and github repository
+
+Game play logic:
+    build initial map class
+    random generate mines
+    implement function that calculates the number of bombes nearby
+    implement reveal and flag logic
+    implement lose and win condition
+
+Frontend:
+    choose a gui library for rust
+    build grid interface like
+    associate the cells from the interface with the map class
+    implement the game logic through click events
+    create more game levels
+    build the end screen popup window
+
+Final:
+    build menu
+    add coments
+    add documentation

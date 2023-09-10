@@ -1,0 +1,11 @@
+I want a small, simple and yet challenging game to play in my free time between work.
+I want to be notified and congratulated when I successfully reveal all non-mine cells, indicating that I've won the game.
+I want the game to end and show me a "Game Over" message when I reveal a mine, indicating that I've lost the game.
+I want the game to automatically reveal all safe cells (with no nearby mines) when I left-click on an empty cell,
+saving me from manually clicking on each safe cell.
+I want the option to choose between different difficulty levels.
+I want to see the number of remaining mines on the grid so that I can make informed decisions about flagging cells. (not implemented yet)
+I want to see a list of high scores, showing the fastest completion times for different difficulty levels. (not implemented yet)
+When I start the game I want to be sure that I can successfully deduce the location of all mines without guessing. (not implemented yet)
+I want to game to look nice and feel nice to play. (not the case here, but I'm working on it)
+I want to be able to play the game very quick and easy and to jump right back into it after I lost or won.
