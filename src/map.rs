@@ -1,22 +1,24 @@
 use druid::{Data, Lens};
 use rand::Rng;
 
+//  The class used for implementing game logic
 #[derive(Clone, Data, Lens)]
 pub struct Map {
-    pub map_size: u32,
-    number_of_mines: u32,
+    pub map_size: u32,  //  Size of the map
+    number_of_mines: u32,  //  Number of mines
     #[data(eq)]
-    mines: Vec<(u32, u32)>,
+    mines: Vec<(u32, u32)>,  //  A vector with the position of the mines
     #[data(eq)]
-    real_map: Vec<Vec<i32>>,
+    real_map: Vec<Vec<i32>>,  //  The real map generated
     #[data(eq)]
-    pub playing_map: Vec<Vec<i32>>,
+    pub playing_map: Vec<Vec<i32>>,  //  What the player will see during the game
     number_of_flags: u32,
     number_of_revealed: u32,
-    pub is_lost: bool,
+    pub is_ended: bool,  //  Flag that tells us if the game has ended
 }
 
 impl Map {
+    //  Constructor - parameter is a level type
     pub fn new(level: super::LEVEL) -> Self {
         let map_size;
         let number_of_mines;
@@ -36,6 +38,7 @@ impl Map {
             }
         }
 
+        //  Initialize all fields with default values, than randomly place the mines througth the map
         let mines: Vec<(u32, u32)> = Vec::<(u32, u32)>::with_capacity(number_of_mines as usize);
         let real_map = vec![vec![0; map_size as usize]; map_size as usize];
         let playing_map = vec![vec![0; map_size as usize]; map_size as usize];
@@ -50,15 +53,16 @@ impl Map {
             playing_map,
             number_of_flags,
             number_of_revealed,
-            is_lost: false,
+            is_ended: false,
         };
 
-        new_map.place_bombs();
+        new_map.place_mines();
 
         new_map
     }
 
-    fn place_bombs(&mut self) {
+    //  Function that randomly places the mines through the map
+    fn place_mines(&mut self) {
         let mut rng = rand::thread_rng();
 
         let mut i = 0;
@@ -80,6 +84,7 @@ impl Map {
         }
     }
 
+    //  For a specific cell, find the number of neighboring cells with mines
     fn find_number(&mut self, x: u32, y: u32) {
         if self.real_map[x as usize][y as usize] == -1 {
             return;
@@ -102,6 +107,7 @@ impl Map {
         self.real_map[x as usize][y as usize] = count;
     }
 
+    //  Print a cell in the mode the player will see during the game
     pub fn print(&self, x: u32, y: u32) -> String {
         let c: char = match self.playing_map[x as usize][y as usize] {
             0 => '-',
@@ -121,6 +127,7 @@ impl Map {
         c.to_string()
     }
 
+    //  Reveal a cell. If the cell has a mine return false
     pub fn reveal(&mut self, x: u32, y: u32) -> bool {
         if self.real_map[x as usize][y as usize] == -1 {
             return false;
@@ -133,6 +140,7 @@ impl Map {
         self.playing_map[x as usize][y as usize] = 2;
         self.number_of_revealed += 1;
 
+        //  If we found a cell with 0 neighborings cells with mines, reveal all others cells with 0 mines near by we find
         if self.real_map[x as usize][y as usize] == 0 {
             if self.real_map[x as usize][y as usize] == 0 {
                 for i in x as i32 - 1..=x as i32 + 1 {
@@ -151,19 +159,24 @@ impl Map {
         true
     }
 
+    //  Flag a cell
     pub fn flag(&mut self, x: u32, y: u32) {
         self.playing_map[x as usize][y as usize] = 1;
         self.number_of_flags += 1;
     }
 
-    pub fn game_won(&self) -> bool {
+    //  Function that calculates if the game is won
+    pub fn game_won(&mut self) -> bool {
         if self.number_of_revealed + self.number_of_mines == self.map_size * self.map_size {
+            self.is_ended = true;
+
             return true;
         }
 
         false
     }
 
+    //  After the game has been lost, reveale all the mines
     pub fn game_lost(&mut self) {
         for i in 0..self.map_size {
             for j in 0..self.map_size {
@@ -173,6 +186,6 @@ impl Map {
             }
         }
 
-        self.is_lost = true;
+        self.is_ended = true;
     }
 }
