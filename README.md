@@ -4,8 +4,8 @@ Small minesweeper game written in rust for a university project.
 I used the druid library for the GUI.
 
 #### [Video Presentation](https://www.youtube.com/watch?v=tQ-rDOXaVDM)
-#### [User stories]()
-#### [Backlog]()
+#### [User stories](https://github.com/NFJJunior/minesweeper/blob/master/doc/user_stories.txt)
+#### [Backlog](https://github.com/NFJJunior/minesweeper/blob/master/doc/backlog.txt)
 #### [Source control](https://github.com/NFJJunior/minesweeper/branches)
 #### [Comments]
 
